@@ -10,9 +10,13 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import paddle
+from paddle import nn
+
 from ...registry import RECOGNIZERS
 from .base import BaseRecognizer
 from paddlevideo.utils import get_logger
+from ...weight_init import kaiming_normal_
 
 logger = get_logger("paddlevideo")
 
@@ -35,6 +39,28 @@ class RecognizerGCN(BaseRecognizer):
         """
         super(RecognizerGCN, self).__init__(backbone, head, runtime_cfg)
         self.if_top5 = if_top5
+
+        self.apply(self.weight_init)
+
+    def weight_init(self, m):
+        if isinstance(m, paddle.nn.Linear):
+            kaiming_normal_(m.weight, reverse=True)
+            if m.bias is not None:
+                nn.initializer.Constant(0)(m.bias)
+        elif isinstance(m, paddle.nn.Conv2D):
+            kaiming_normal_(m.weight)
+            if m.bias is not None:
+                nn.initializer.Constant(0)(m.bias)
+        elif isinstance(m, paddle.nn.Conv1D):
+            kaiming_normal_(m.weight)
+            if m.bias is not None:
+                nn.initializer.Constant(0)(m.bias)
+        elif isinstance(m, paddle.nn.BatchNorm2D):
+            nn.initializer.Constant(1)(m.weight)
+            nn.initializer.Constant(0)(m.bias)
+        elif isinstance(m, paddle.nn.BatchNorm1D):
+            nn.initializer.Constant(1)(m.weight)
+            nn.initializer.Constant(0)(m.bias)
 
     def forward_net(self, data):
         """Define how the model is going to run, from input to output.
