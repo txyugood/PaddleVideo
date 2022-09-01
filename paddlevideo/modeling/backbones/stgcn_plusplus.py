@@ -301,6 +301,9 @@ class STGCNPlusPlus(nn.Layer):
     def forward(self, x):
         if x.shape[1] == 1:
             x = x[:, 0]
+        elif not self.training and x.shape[1] > 1:
+            bs, nc = x.shape[:2]
+            x = x.reshape([bs * nc] + list(x.shape[2:]))
         N, M, T, V, C = x.shape
         x = paddle.transpose(x, [0, 1, 3, 4, 2])
         if self.data_bn_type == 'MVC':
