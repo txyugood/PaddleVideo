@@ -15,6 +15,7 @@
 import math
 from paddle.optimizer.lr import *
 import numpy as np
+
 """
 PaddleVideo Learning Rate Schedule:
 You can use paddle.optimizer.lr
@@ -51,7 +52,7 @@ class CustomWarmupCosineDecay(LRScheduler):
         self.cosine_base_lr = cosine_base_lr
         self.max_epoch = max_epoch
         self.num_iters = num_iters
-        #call step() in base class, last_lr/last_epoch/base_lr will be update
+        # call step() in base class, last_lr/last_epoch/base_lr will be update
         super(CustomWarmupCosineDecay, self).__init__(last_epoch=last_epoch,
                                                       verbose=verbose)
 
@@ -155,8 +156,8 @@ class CustomWarmupPiecewiseDecay(LRScheduler):
         if self.verbose:
             print(
                 'step Epoch {}: {} set learning rate to {}.self.num_iters={}, 1/self.num_iters={}'
-                .format(self.last_epoch, self.__class__.__name__, self.last_lr,
-                        self.num_iters, 1 / self.num_iters))
+                    .format(self.last_epoch, self.__class__.__name__, self.last_lr,
+                            self.num_iters, 1 / self.num_iters))
 
     def _lr_func_steps_with_relative_lrs(self, cur_epoch, lrs, base_lr, steps,
                                          max_epoch):
@@ -168,8 +169,8 @@ class CustomWarmupPiecewiseDecay(LRScheduler):
         if self.verbose:
             print(
                 '_lr_func_steps_with_relative_lrs, cur_epoch {}: {}, steps {}, ind {}, step{}, max_epoch{}'
-                .format(cur_epoch, self.__class__.__name__, steps, ind, step,
-                        max_epoch))
+                    .format(cur_epoch, self.__class__.__name__, steps, ind, step,
+                            max_epoch))
 
         return lrs[ind - 1] * base_lr
 
@@ -198,9 +199,9 @@ class CustomWarmupPiecewiseDecay(LRScheduler):
         if self.verbose:
             print(
                 'get_lr, Epoch {}: {}, lr {}, lr_end {}, self.lrs{}, self.step_base_lr{}, self.steps{}, self.max_epoch{}'
-                .format(self.last_epoch, self.__class__.__name__, lr, lr_end,
-                        self.lrs, self.step_base_lr, self.steps,
-                        self.max_epoch))
+                    .format(self.last_epoch, self.__class__.__name__, lr, lr_end,
+                            self.lrs, self.step_base_lr, self.steps,
+                            self.max_epoch))
 
         return lr
 
@@ -302,7 +303,7 @@ class CustomWarmupAdjustDecay(LRScheduler):
         self.lr_decay_rate = lr_decay_rate
         self.boundaries = boundaries
         self.num_iters = num_iters
-        #call step() in base class, last_lr/last_epoch/base_lr will be update
+        # call step() in base class, last_lr/last_epoch/base_lr will be update
         super(CustomWarmupAdjustDecay, self).__init__(last_epoch=last_epoch,
                                                       verbose=verbose)
 
@@ -333,6 +334,17 @@ class CustomWarmupAdjustDecay(LRScheduler):
         if self.last_epoch < self.warmup_epochs:
             lr = self.step_base_lr * (self.last_epoch + 1) / self.warmup_epochs
         else:
-            lr = self.step_base_lr * (self.lr_decay_rate**np.sum(
+            lr = self.step_base_lr * (self.lr_decay_rate ** np.sum(
                 self.last_epoch >= np.array(self.boundaries)))
         return lr
+
+
+class CustomCosineAnnealingDecay(CosineAnnealingDecay):
+    def __init__(self, learning_rate,
+                 num_iters,
+                 max_epoch,
+                 eta_min=0,
+                 last_epoch=-1,
+                 verbose=False):
+        super(CustomCosineAnnealingDecay, self).__init__(learning_rate=learning_rate, T_max=max_epoch * num_iters,
+                                                         eta_min=eta_min, last_epoch=last_epoch, verbose=verbose)

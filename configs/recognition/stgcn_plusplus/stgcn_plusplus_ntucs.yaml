@@ -14,7 +14,7 @@ MODEL: #MODEL field
         dropout: 0.0
 
 DATASET: #DATASET field
-    batch_size: 16 #Mandatory, bacth size
+    batch_size: 128 #Mandatory, bacth size
     num_workers: 4 #Mandatory, the number of subprocess on each GPU.
     test_batch_size: 1
     test_num_workers: 0
@@ -93,9 +93,8 @@ OPTIMIZER: #OPTIMIZER field
   name: 'Momentum'
   momentum: 0.9
   learning_rate:
-    name: 'CustomWarmupCosineStepDecay'
-    warmup_iters: 0
-    base_lr: 0.0125
+    name: 'CustomCosineAnnealingDecay'
+    learning_rate: 0.1
     max_epoch: 16
     iter_step: True
   weight_decay:
