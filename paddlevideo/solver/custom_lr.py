@@ -339,12 +339,34 @@ class CustomWarmupAdjustDecay(LRScheduler):
         return lr
 
 
-class CustomCosineAnnealingDecay(CosineAnnealingDecay):
+class CustomCosineAnnealingDecay(LRScheduler):
     def __init__(self, learning_rate,
                  num_iters,
                  max_epoch,
                  eta_min=0,
                  last_epoch=-1,
                  verbose=False):
-        super(CustomCosineAnnealingDecay, self).__init__(learning_rate=learning_rate, T_max=max_epoch * num_iters,
-                                                         eta_min=eta_min, last_epoch=last_epoch, verbose=verbose)
+        super(LRScheduler, self).__init__(learning_rate=learning_rate, last_epoch=last_epoch, verbose=verbose)
+        self.eta_min = eta_min
+        self.max_iters = max_epoch * num_iters
+
+    def annealing_cos(self, start, end, factor, weight=1):
+        """Calculate annealing cos learning rate.
+
+        Cosine anneal from `weight * start + (1 - weight) * end` to `end` as
+        percentage goes from 0.0 to 1.0.
+
+        Args:
+            start (float): The starting learning rate of the cosine annealing.
+            end (float): The ending learing rate of the cosine annealing.
+            factor (float): The coefficient of `pi` when calculating the current
+                percentage. Range from 0.0 to 1.0.
+            weight (float, optional): The combination factor of `start` and `end`
+                when calculating the actual starting learning rate. Default to 1.
+        """
+        cos_out = math.cos(math.pi * factor) + 1
+        return end + 0.5 * weight * (start - end) * cos_out
+
+    def get_lr(self):
+        target_lr = self.eta_min
+        return self.annealing_cos(self.base_lr, target_lr, self.last_epoch / self.max_iters)
