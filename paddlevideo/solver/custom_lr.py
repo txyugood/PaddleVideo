@@ -346,7 +346,7 @@ class CustomCosineAnnealingDecay(LRScheduler):
                  eta_min=0,
                  last_epoch=-1,
                  verbose=False):
-        super(LRScheduler, self).__init__(learning_rate=learning_rate, last_epoch=last_epoch, verbose=verbose)
+        super(CustomCosineAnnealingDecay, self).__init__(learning_rate=learning_rate, last_epoch=last_epoch, verbose=verbose)
         self.eta_min = eta_min
         self.max_iters = max_epoch * num_iters
 
