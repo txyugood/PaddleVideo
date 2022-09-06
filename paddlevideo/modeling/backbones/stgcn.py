@@ -119,15 +119,6 @@ class Graph():
             neighbor_link = [(i, j) for (i, j) in neighbor_1base]
             self.edge = self_link + neighbor_link
             self.center = 11
-        elif layout == 'coco':
-            self.num_node = 17
-            self_link = [(i, i) for i in range(self.num_node)]
-            neighbor_1base = [(15, 13), (13, 11), (16, 14), (14, 12), (11, 5), (12, 6),
-                              (9, 7), (7, 5), (10, 8), (8, 6), (5, 0), (6, 0),
-                              (1, 0), (3, 1), (2, 0), (4, 2)]
-            neighbor_link = [(i, j) for (i, j) in neighbor_1base]
-            self.edge = self_link + neighbor_link
-            self.center = 0
         else:
             raise ValueError("Do Not Exist This Layout.")
 
