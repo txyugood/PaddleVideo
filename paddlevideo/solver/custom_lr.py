@@ -346,10 +346,9 @@ class CustomCosineAnnealingDecay(LRScheduler):
                  eta_min=0,
                  last_epoch=-1,
                  verbose=False):
+        super(CustomCosineAnnealingDecay, self).__init__(learning_rate=learning_rate, last_epoch=last_epoch, verbose=verbose)
         self.eta_min = eta_min
         self.max_iters = max_epoch * num_iters
-        super(CustomCosineAnnealingDecay, self).__init__(learning_rate=learning_rate, last_epoch=last_epoch,
-                                                         verbose=verbose)
 
     def annealing_cos(self, start, end, factor, weight=1):
         """Calculate annealing cos learning rate.
