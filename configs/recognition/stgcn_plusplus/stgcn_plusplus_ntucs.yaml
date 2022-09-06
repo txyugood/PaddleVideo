@@ -5,18 +5,17 @@ MODEL: #MODEL field
         gcn_adaptive: "init"
         gcn_with_res: True
         tcn_type: "mstcn"
-        layout: "coco_keypoint"
+        layout: "coco"
         strategy: "spatial"
     head:
         name: "STGCNPlusPlusHead" #Mandatory, indicate the type of head, associate to the 'paddlevideo/modeling/heads'
         in_channels: 256
         num_classes: 60  #Optional, the number of classes to be classified.
-        dropout: 0.1
-        ls_eps: 0.1
+        dropout: 0.0
 
 DATASET: #DATASET field
     batch_size: 128 #Mandatory, bacth size
-    num_workers: 8 #Mandatory, the number of subprocess on each GPU.
+    num_workers: 4 #Mandatory, the number of subprocess on each GPU.
     test_batch_size: 1
     test_num_workers: 0
     train:
@@ -44,6 +43,7 @@ PIPELINE: #PIPELINE field
           name: "UniformSampleFrames"
           clip_len: 100
         transform: #Mandotary, image transfrom operator
+            - PreNormalize2D:
             - GenSkeFeat:
                 dataset: 'coco'
                 feats: ['j']
@@ -99,12 +99,8 @@ OPTIMIZER: #OPTIMIZER field
     iter_step: True
   weight_decay:
     name: 'L2'
-    value: 5e-4
+    value: 1e-4
   use_nesterov: True
-
-PRECISEBN:
-  preciseBN_interval: 2     # epoch interval to do preciseBN, default 1.
-  num_iters_preciseBN: 200  # how many batches used to do preciseBN, default 200.
 
 
 METRIC:
