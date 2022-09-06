@@ -5,18 +5,18 @@ MODEL: #MODEL field
         gcn_adaptive: "init"
         gcn_with_res: True
         tcn_type: "mstcn"
-        layout: "coco_keypoint"
-        strategy: "spatial"
+        layout: "coco"
+        strategy: "stgcn_spatial"
     head:
         name: "STGCNPlusPlusHead" #Mandatory, indicate the type of head, associate to the 'paddlevideo/modeling/heads'
         in_channels: 256
         num_classes: 60  #Optional, the number of classes to be classified.
-        dropout: 0.1
-        ls_eps: 0.1
+#        dropout: 0.1
+#        ls_eps: 0.1
 
 DATASET: #DATASET field
     batch_size: 128 #Mandatory, bacth size
-    num_workers: 4 #Mandatory, the number of subprocess on each GPU.
+    num_workers: 8 #Mandatory, the number of subprocess on each GPU.
     test_batch_size: 1
     test_num_workers: 0
     train:
@@ -106,9 +106,9 @@ OPTIMIZER: #OPTIMIZER field
 METRIC:
     name: 'SkeletonMetric'
 
-PRECISEBN:
-    preciseBN_interval: 2
-    num_iters_preciseBN: 200  #default
+#PRECISEBN:
+#    preciseBN_interval: 2
+#    num_iters_preciseBN: 200  #default
 
 model_name: "STGCN++"
 log_interval: 10 #Optional, the interal of logger, default:10

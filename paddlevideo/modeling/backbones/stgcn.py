@@ -55,6 +55,11 @@ def get_hop_distance(num_node, edge, max_hop=1):
         hop_dis[arrive_mat[d]] = d
     return hop_dis
 
+def edge2mat(link, num_node):
+    A = np.zeros((num_node, num_node))
+    for i, j in link:
+        A[j, i] = 1
+    return A
 
 def normalize_digraph(A):
     Dl = np.sum(A, 0)
@@ -117,8 +122,25 @@ class Graph():
                               (5, 7), (6, 8), (7, 9), (8, 10), (5, 11), (6, 12),
                               (11, 13), (12, 14), (13, 15), (14, 16), (11, 12)]
             neighbor_link = [(i, j) for (i, j) in neighbor_1base]
+            self.outward = [(j, i) for (i, j) in neighbor_1base]
+            self.self_link = self_link
+            self.neighbor_1base = neighbor_1base
+            self.neighbor_link = neighbor_link
             self.edge = self_link + neighbor_link
             self.center = 11
+        elif layout == 'coco':
+            self.num_node = 17
+            self_link = [(i, i) for i in range(self.num_node)]
+            neighbor_1base = [(15, 13), (13, 11), (16, 14), (14, 12), (11, 5), (12, 6),
+                              (9, 7), (7, 5), (10, 8), (8, 6), (5, 0), (6, 0),
+                              (1, 0), (3, 1), (2, 0), (4, 2)]
+            neighbor_link = [(i, j) for (i, j) in neighbor_1base]
+            self.outward = [(j, i) for (i, j) in neighbor_1base]
+            self.self_link = self_link
+            self.neighbor_1base = neighbor_1base
+            self.neighbor_link = neighbor_link
+            self.edge = self_link + neighbor_link
+            self.center = 0
         else:
             raise ValueError("Do Not Exist This Layout.")
 
@@ -152,6 +174,12 @@ class Graph():
                     A.append(a_root + a_close)
                     A.append(a_further)
             A = np.stack(A)
+            self.A = A
+        elif strategy == 'stgcn_spatial':
+            Iden = edge2mat(self.self_link, self.num_node)
+            In = normalize_digraph(edge2mat(self.neighbor_1base, self.num_node))
+            Out = normalize_digraph(edge2mat(self.outward, self.num_node))
+            A = np.stack((Iden, In, Out))
             self.A = A
         else:
             raise ValueError("Do Not Exist This Strategy")
