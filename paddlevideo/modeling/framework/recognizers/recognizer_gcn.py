@@ -10,6 +10,8 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 
+import paddle
+
 from ...registry import RECOGNIZERS
 from .base import BaseRecognizer
 from paddlevideo.utils import get_logger
@@ -35,6 +37,9 @@ class RecognizerGCN(BaseRecognizer):
         """
         super(RecognizerGCN, self).__init__(backbone, head, runtime_cfg)
         self.if_top5 = if_top5
+        if paddle.get_device() != 'cpu':
+            self.backbone = paddle.nn.SyncBatchNorm.convert_sync_batchnorm(
+                self.backbone)
 
     def forward_net(self, data):
         """Define how the model is going to run, from input to output.
