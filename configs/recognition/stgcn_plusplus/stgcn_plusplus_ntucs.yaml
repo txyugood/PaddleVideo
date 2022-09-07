@@ -11,8 +11,8 @@ MODEL: #MODEL field
         name: "STGCNPlusPlusHead" #Mandatory, indicate the type of head, associate to the 'paddlevideo/modeling/heads'
         in_channels: 256
         num_classes: 60  #Optional, the number of classes to be classified.
-#        dropout: 0.1
-#        ls_eps: 0.1
+        dropout: 0.0
+        ls_eps: 0.0
 
 DATASET: #DATASET field
     batch_size: 128 #Mandatory, bacth size

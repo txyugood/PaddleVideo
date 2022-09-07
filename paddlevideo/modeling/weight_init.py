@@ -158,3 +158,8 @@ def kaiming_normal_(tensor, a=0., mode='fan_in', nonlinearity='leaky_relu',rever
     with paddle.no_grad():
         paddle.nn.initializer.Normal(0, std)(tensor)
         return tensor
+
+def constant_(tensor, value=0.0):
+    initializer = paddle.nn.initializer.Constant(value=value)
+    initializer(tensor)
+

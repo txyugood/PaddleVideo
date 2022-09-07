@@ -17,12 +17,11 @@ import paddle.nn as nn
 
 from .base import BaseHead
 from ..registry import HEADS
-from ..weight_init import weight_init_
 
 
 @HEADS.register()
 class STGCNPlusPlusHead(BaseHead):
-    def __init__(self, in_channels=256, num_classes=10, dropout=0.5, init_std=0.01, **kwargs):
+    def __init__(self, in_channels=256, num_classes=10, dropout=0.0, init_std=0.01, **kwargs):
         super().__init__(num_classes, in_channels, **kwargs)
 
         self.dropout_ratio = dropout
@@ -33,6 +32,11 @@ class STGCNPlusPlusHead(BaseHead):
             self.dropout = None
         self.in_c = in_channels
         self.fc_cls = nn.Linear(self.in_c, num_classes)
+        self.init_weights()
+
+    def init_weights(self):
+        nn.initializer.Normal(std=self.init_std, mean=0)(self.fc_cls.weight)
+        nn.initializer.Constant(0)(self.fc_cls.bias)
 
     def forward(self, x):
         pool = nn.AdaptiveAvgPool2D(1)

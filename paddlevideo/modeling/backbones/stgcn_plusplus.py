@@ -4,7 +4,7 @@ import paddle
 import paddle.nn as nn
 
 from .stgcn import Graph
-from ..weight_init import kaiming_normal_
+from ..weight_init import kaiming_normal_, constant_
 from ..registry import BACKBONES
 
 EPS = 1e-4
@@ -297,6 +297,28 @@ class STGCNPlusPlus(nn.Layer):
         self.num_stages = num_stages
         self.gcn = nn.LayerList(modules)
         self.pretrained = pretrained
+        self.init_weights()
+
+    def init_weights(self):
+        for i, m in enumerate(self.sublayers()):
+            if isinstance(m, paddle.nn.Linear):
+                kaiming_normal_(m.weight, reverse=True)
+                if m.bias is not None:
+                    constant_(m.bias, 0)
+            elif isinstance(m, paddle.nn.Conv2D):
+                kaiming_normal_(m.weight)
+                if m.bias is not None:
+                    constant_(m.bias, 0)
+            elif isinstance(m, paddle.nn.Conv1D):
+                kaiming_normal_(m.weight)
+                if m.bias is not None:
+                    constant_(m.bias, 0)
+            elif isinstance(m, paddle.nn.BatchNorm2D):
+                constant_(m.weight, 1)
+                constant_(m.bias, 0)
+            elif isinstance(m, paddle.nn.BatchNorm1D):
+                constant_(m.weight, 1)
+                constant_(m.bias, 0)
 
     def forward(self, x):
         if x.shape[1] == 1:
