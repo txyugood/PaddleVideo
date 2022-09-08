@@ -1,73 +1,147 @@
-[English](README_en.md) | 中文
-
-# PaddleVideo
-
-![python version](https://img.shields.io/badge/python-3.7+-orange.svg) ![paddle version](https://img.shields.io/badge/PaddlePaddle-2.3.1-blue)
-
-## 简介
-
-PaddleVideo旨在打造一套丰富、领先且实用的Video工具库，旨在帮助开发者更好的进行视频领域的学术研究和产业实践。
-
-<div align="center">
-  <img src="docs/images/home.gif" width="450px"/><br>
-</div>
-
-## 近期更新
-
-- 发布轻量化行为识别模型**🔥[PP-TSMv2](./docs/zh-CN/model_zoo/recognition/pp-tsm.md)**, Kinetics-400精度74.38%，25fps的10s视频cpu推理时间仅需433ms.各模型性能对比[benchmark](./docs/zh-CN/benchmark.md).
-- 新增[知识蒸馏](./docs/zh-CN/distillation.md)功能.
-- 新增基于transformer的行为识别模型[TokenShift](https://github.com/PaddlePaddle/PaddleVideo/blob/develop/docs/zh-CN/model_zoo/recognition/tokenshift_transformer.md).
-- 新增基于骨骼点的行为识别模型[2s-ACGN](https://github.com/PaddlePaddle/PaddleVideo/blob/develop/docs/zh-CN/model_zoo/recognition/agcn2s.md)、[CTR-GCN](./docs/zh-CN/model_zoo/recognition/ctrgcn.md).
+# PYSKL: Towards Good Practices for Skeleton Action Recognition（基于Paddle复现STGCN++）
+## 1.简介
+本文作者提出了一个原始的GCN模型ST-GCN++。仅对原始ST-GCN进行简单修改。ST-GCN++重新设计了空间模块和时间模块，ST-GCN++就获得了与具有复杂注意机制的SOTA识别性能。同时，计算开销也减大大的减少了。
 
 
-👀 🌟  **《产业级视频技术与应用案例》系列课程回放链接**:  https://aistudio.baidu.com/aistudio/course/introduce/6742 🌟
+## 2.复现精度
+在NTU60-HRNET数据集上的测试效果如下表。
 
-​																	  💖 **欢迎大家扫码入群讨论** 💖
-<div align="center">
-  <img src="docs/images/user_group.png" width=250/></div>
+| NetWork | epochs | opt  | batch_size | dataset | top1 acc |
+| --- | --- | ---  | --- | --- | --- |
+| STGCN++ | 16 | SGD  | 128 | UCF-101 | 97.56% |
 
-- 添加成功后回复【视频】加入交流群
+## 3.数据集
+数据集下载地址:
 
-## 特性
+[https://aistudio.baidu.com/aistudio/datasetdetail/167195](https://aistudio.baidu.com/aistudio/datasetdetail/167195)
 
-支持多种Video相关前沿算法，在此基础上打造产业级特色模型[PP-TSM](docs/zh-CN/model_zoo/recognition/pp-tsm.md)和[PP-TSMv2](docs/zh-CN/model_zoo/recognition/pp-tsm.md)，并打通数据生产、模型训练、压缩、预测部署全流程。
 
-<div align="center">
-    <img src="./docs/images/features.png" width="700">
-</div>
 
-## 快速开始
+## 4.环境依赖
+PaddlePaddle == 2.3.2 
+## 5.快速开始
+### 训练：
+```shell
+cd PaddleVideo
+pip install -r requirements.txt
+ln -s path/to/ntu60_hrnet.pkl data/ntu60_hrnet.pkl
+nohup python -u main.py --validate -c configs/recognition/stgcn_plusplus/stgcn_plusplus_ntucs.yaml --seed 9999 > train.log &
+tail -f train.log
+```
+validate: 开启验证
 
-- 一行命令快速使用: [快速开始](./docs/zh-CN/quick_start.md)
+-c: 模型配置路径
 
-## 场景应用
+seed: 随机种子
 
-PaddleVideo场景应用覆盖体育、互联网、工业、医疗行业，在PP-TSM的基础能力之上，以案例的形式展示利用场景数据微调、模型优化方法、数据增广等内容，为开发者实际落地提供示范与启发。详情可查看[应用](./applications/)。
 
-## 文档教程
+### 测试：
+ 
+使用最优模型进行评估.
 
-- [快速开始](./docs/zh-CN/quick_start.md)
-- [安装说明](./docs/zh-CN/install.md)
-- [使用指南](./docs/zh-CN/usage.md)
-- [PP-TSM行为识别🔥](./docs/zh-CN/model_zoo/recognition/pp-tsm.md)
-  - [模型库](./docs/zh-CN/model_zoo/recognition/pp-tsm.md#7)
-  - [模型训练](./docs/zh-CN/model_zoo/recognition/pp-tsm.md#4)
-  - [模型压缩](./deploy/slim/)
-      - [模型量化](./deploy/slim/readme.md)
-      - [知识蒸馏](./docs/zh-CN/distillation.md)
-  - [推理部署](./deploy/)
-      - [基于Python预测引擎推理](./docs/zh-CN/model_zoo/recognition/pp-tsm.md#62)
-      - [基于C++预测引擎推理](./deploy/cpp_infer/readme.md)
-      - [服务端部署](./deploy/python_serving/readme.md)
-      - [Paddle2ONNX模型转化与预测](./deploy/paddle2onnx/readme.md)
-      - [Benchmark](./docs/zh-CN/benchmark.md)
-- [前沿算法与模型](./docs/zh-CN/model_zoo/README.md)🚀
-- [数据集](./docs/zh-CN/dataset/README.md)
-- [场景应用](./applications/README.md)
-- [数据标注](./applications/BILS)
-- [赛事支持](./docs/zh-CN/competition.md)
-- [贡献代码](./docs/zh-CN/contribute/README.md)
+最优模型下载地址：
 
-## 许可证书
 
-本项目的发布受[Apache 2.0 license](LICENSE)许可认证。
+链接: https://pan.baidu.com/s/1X8-M1IzEQqu1s_wtYtLFyw 
+
+提取码: s8eo 
+
+
+
+```shell
+python -u main.py --test
+-c
+configs/recognition/stgcn_plusplus/stgcn_plusplus_ntucs.yaml
+--weights path/to/STGCN_PlusPlus_best.pdparams
+```
+
+test: 测试模式
+
+-c: 模型配置
+
+weights: 模型权重路径
+
+测试结果
+
+```shell
+[09/07 23:45:20] [TEST] Processing batch 18929/18932 ...
+[09/07 23:45:20] [TEST] Processing batch 18930/18932 ...
+[09/07 23:45:20] [TEST] Processing batch 18931/18932 ...
+[09/07 23:45:20] [TEST] finished, avg_acc1= 0.9755968451499939, avg_acc5= 0.9996830821037292
+```
+
+
+### 模型导出
+模型导出可执行以下命令：
+
+```shell
+python3.7 tools/export_model.py -c configs/recognition/stgcn_plusplus/stgcn_plusplus_ntucs.yaml --save_name inference -p=path/to/STGCN_PlusPlus_best.pdparams -o=./output/STGCN_PlusPlus/
+```
+
+参数说明：
+
+-c: 模型配置路径
+
+save_name:导出的静态图文件名
+
+-p: 动态图模型权重路径
+
+-o: 输出结果保存路径
+
+### Inference推理
+
+可使用以下命令进行模型推理。该脚本依赖auto_log, 请参考下面TIPC部分先安装auto_log。infer命令运行如下：
+
+```shell
+python tools/predict.py
+--config configs/recognition/stgcn_plusplus/stgcn_plusplus_ntucs.yaml --use_gpu=True --model_file=./output/STGCN_PlusPlus/inference.pdmodel --params_file=./output/STGCN_PlusPlus/inference.pdiparams --batch_size=1 --input_file=./data/stdgcn_plusplus_data/example_ntu60_skeleton.pkl 
+```
+
+参数说明:
+
+use_gpu:是否使用GPU
+
+model_file: 模型结构文件路径，由export_model.py脚本导出。
+
+params_file: 模型权重文件路径，由export_model.py脚本导出。
+
+batch_size: 批次大小
+
+input_file: 输入文件路径
+
+
+
+
+### TIPC基础链条测试
+
+该部分依赖auto_log，需要进行安装，安装方式如下：
+
+auto_log的详细介绍参考[https://github.com/LDOUBLEV/AutoLog](https://github.com/LDOUBLEV/AutoLog)。
+
+```shell
+git clone https://gitee.com/Double_V/AutoLog
+cd AutoLog/
+pip3 install -r requirements.txt
+python3 setup.py bdist_wheel
+pip3 install ./dist/auto_log-1.2.0-py3-none-any.whl
+```
+
+
+```shell
+bash test_tipc/prepare.sh test_tipc/configs/STGCN_PlusPlus/train_infer_python.txt 'lite_train_lite_infer'
+
+bash test_tipc/test_train_inference_python.sh test_tipc/configs/STGCN_PlusPlus/train_infer_python.txt 'lite_train_lite_infer'
+```
+
+测试结果如截图所示：
+
+<img src=./test_tipc/data/tipc_result.png></img>
+
+
+## 6.模型信息
+
+| 信息 | 描述 |
+| --- | --- |
+|模型名称| STGCN++ |
+|框架版本| PaddlePaddle==2.3.2|
+|应用场景| 骨骼识别 |
