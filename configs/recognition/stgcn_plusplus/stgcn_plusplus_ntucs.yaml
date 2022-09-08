@@ -106,10 +106,10 @@ OPTIMIZER: #OPTIMIZER field
 METRIC:
     name: 'SkeletonMetric'
 
-#PRECISEBN:
-#    preciseBN_interval: 2
-#    num_iters_preciseBN: 200  #default
+INFERENCE:
+    name: 'STGCN_PlusPlus_Inference_helper'
+    top_k: 1
 
-model_name: "STGCN++"
+model_name: "STGCN_PlusPlus"
 log_interval: 10 #Optional, the interal of logger, default:10
 epochs: 16 #Mandatory, total epoch

@@ -182,7 +182,7 @@ class unit_gcn(nn.Layer):
 
         if self.conv_pos == 'pre':
             x = self.conv(x)
-            x = x.reshape([n, self.num_subsets, -1, t, v])
+            x = x.reshape([n, self.num_subsets, x.shape[1] // self.num_subsets, t, v])
             x = paddle.einsum('nkctv,kvw->nctw', x, A)
         elif self.conv_pos == 'post':
             x = paddle.einsum('nctv,kvw->nkctw', x, A)
@@ -321,18 +321,15 @@ class STGCNPlusPlus(nn.Layer):
                 constant_(m.bias, 0)
 
     def forward(self, x):
-        if x.shape[1] == 1:
-            x = x[:, 0]
-        elif not self.training and x.shape[1] > 1:
-            bs, nc = x.shape[:2]
-            x = x.reshape([bs * nc] + list(x.shape[2:]))
+        bs, nc = x.shape[:2]
+        x = x.reshape([bs * nc] + list(x.shape[2:]))
         N, M, T, V, C = x.shape
         x = paddle.transpose(x, [0, 1, 3, 4, 2])
         if self.data_bn_type == 'MVC':
             x = self.data_bn(x.reshape([N, M * V * C, T]))
         else:
-            x = self.data_bn(x.reshape([N * M, V * C, T]))
-        x = x.reshape([N, M, V, C, T]).transpose([0, 1, 3, 4, 2]).reshape([N * M, C, T, V])
+            x = self.data_bn(x.reshape([-1, V * C, T]))
+        x = x.reshape([N, M, V, C, T]).transpose([0, 1, 3, 4, 2]).reshape([-1, C, T, V])
 
         for i in range(self.num_stages):
             x = self.gcn[i](x)

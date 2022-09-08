@@ -41,7 +41,7 @@ class STGCNPlusPlusHead(BaseHead):
     def forward(self, x):
         pool = nn.AdaptiveAvgPool2D(1)
         N, M, C, T, V = x.shape
-        x = x.reshape([N * M, C, T, V])
+        x = x.reshape([-1, C, T, V])
 
         x = pool(x)
         x = x.reshape([N, M, C])
